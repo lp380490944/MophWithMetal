@@ -37,10 +37,9 @@
     }
     
     //4. 创建CJLRenderer
-    _view.preferredFramesPerSecond = 30;
+    _view.preferredFramesPerSecond = 60;
 //    _view.transform3D = CATransform3DMakeRotation(M_PI, 1, 0, 0);
-    _render = [[CJLRenderer alloc] initWithMetalKitView:_view];
-    
+    _render = [[CJLRenderer alloc] initWithMetalKitView:_view mtkviewType:PMMTKViewTypeTriangle effectType:PMEffectTypeMorph];
     //5.判断_render 是否创建成功
     if (!_render) {
         NSLog(@"Renderer failed initialization");
@@ -48,7 +47,6 @@
     }
     // 6、初始化视口大小
     [_render mtkView:_view drawableSizeWillChange:_view.drawableSize];
-    
     //7.设置MTKView 的代理(由CJLRender来实现MTKView 的代理方法)
     _view.delegate = _render;
 }

@@ -23,14 +23,21 @@
 #import <Foundation/Foundation.h>
 //是iOS 7之后的新特性语法，这种方式叫Modules(模块导入) 或者 "semantic import(语义导入)" ,是一种更好的头部预处理的执行方式
 @import MetalKit;
+#import "CJLShaderTypes.h"
+typedef NS_ENUM(NSUInteger, PMMTKViewType) {
+    PMMTKViewTypeTriangle,
+    PMMTKViewTypeRectangle,
+};
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 //这是一个独立于平台的渲染类
 //MTKViewDelegate协议:允许对象呈现在视图中并响应调整大小事件
 @interface CJLRenderer : NSObject<MTKViewDelegate>
-
-- (id)initWithMetalKitView: (MTKView *)mtkView;
+@property(nonatomic,assign)PMMTKViewType mtkviewType;
+@property(nonatomic,assign)PMEffectType effectType;
+- (id)initWithMetalKitView: (MTKView *)mtkView mtkviewType:(PMMTKViewType)mtkviewType effectType:(PMEffectType)effectType;
 
 @end
 

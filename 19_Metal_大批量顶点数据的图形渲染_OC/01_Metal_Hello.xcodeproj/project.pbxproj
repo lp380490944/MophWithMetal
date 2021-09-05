@@ -16,7 +16,11 @@
 		059C71A324ED7EF10005E470 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 059C71A224ED7EF10005E470 /* main.m */; };
 		059C71AB24ED80270005E470 /* CJLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 059C71AA24ED80270005E470 /* CJLRenderer.m */; };
 		059C71AE24EE3B510005E470 /* CJLShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 059C71AD24EE3B500005E470 /* CJLShaders.metal */; };
-		71C288E026D371B80084F1E5 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 71C288DE26D371B70084F1E5 /* test.cpp */; };
+		7139807F26E0BC75003ECFB2 /* LPEffectGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7139807D26E0BC75003ECFB2 /* LPEffectGenerator.m */; };
+		7139808026E0D389003ECFB2 /* PMEffectAlgorithmGenerator.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7139807926E05DF7003ECFB2 /* PMEffectAlgorithmGenerator.metal */; };
+		71E9314326E4965D00EDF6B5 /* PMColorPointModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E9314226E4965D00EDF6B5 /* PMColorPointModel.m */; };
+		71E9314626E4C8D200EDF6B5 /* LPFireEffectGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E9314526E4C8D200EDF6B5 /* LPFireEffectGenerator.m */; };
+		71E9314926E4CF7B00EDF6B5 /* LPFlowEffectGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E9314826E4CF7B00EDF6B5 /* LPFlowEffectGenerator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +40,16 @@
 		059C71AA24ED80270005E470 /* CJLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJLRenderer.m; sourceTree = "<group>"; };
 		059C71AD24EE3B500005E470 /* CJLShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CJLShaders.metal; sourceTree = "<group>"; };
 		059C71AF24EE3BA60005E470 /* CJLShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CJLShaderTypes.h; sourceTree = "<group>"; };
-		71C288DE26D371B70084F1E5 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
-		71C288DF26D371B70084F1E5 /* test.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test.hpp; sourceTree = "<group>"; };
+		7139807926E05DF7003ECFB2 /* PMEffectAlgorithmGenerator.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = PMEffectAlgorithmGenerator.metal; sourceTree = "<group>"; };
+		7139807A26E05EAE003ECFB2 /* PMEffectAlgorithmGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMEffectAlgorithmGenerator.h; sourceTree = "<group>"; };
+		7139807D26E0BC75003ECFB2 /* LPEffectGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LPEffectGenerator.m; sourceTree = "<group>"; };
+		7139807E26E0BC75003ECFB2 /* LPEffectGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LPEffectGenerator.h; sourceTree = "<group>"; };
+		71E9314126E4965D00EDF6B5 /* PMColorPointModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMColorPointModel.h; sourceTree = "<group>"; };
+		71E9314226E4965D00EDF6B5 /* PMColorPointModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMColorPointModel.m; sourceTree = "<group>"; };
+		71E9314426E4C8D200EDF6B5 /* LPFireEffectGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LPFireEffectGenerator.h; sourceTree = "<group>"; };
+		71E9314526E4C8D200EDF6B5 /* LPFireEffectGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LPFireEffectGenerator.m; sourceTree = "<group>"; };
+		71E9314726E4CF7B00EDF6B5 /* LPFlowEffectGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LPFlowEffectGenerator.h; sourceTree = "<group>"; };
+		71E9314826E4CF7B00EDF6B5 /* LPFlowEffectGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LPFlowEffectGenerator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,18 +82,8 @@
 		059C718F24ED7EEF0005E470 /* 01_Metal_Hello */ = {
 			isa = PBXGroup;
 			children = (
-				059C719024ED7EEF0005E470 /* AppDelegate.h */,
-				059C719124ED7EEF0005E470 /* AppDelegate.m */,
-				059C719324ED7EEF0005E470 /* SceneDelegate.h */,
-				059C719424ED7EEF0005E470 /* SceneDelegate.m */,
-				059C719624ED7EEF0005E470 /* ViewController.h */,
-				059C719724ED7EEF0005E470 /* ViewController.m */,
+				71E9314B26E4CFB900EDF6B5 /* Application */,
 				059C71AC24ED802D0005E470 /* Render */,
-				059C719924ED7EEF0005E470 /* Main.storyboard */,
-				059C719C24ED7EF10005E470 /* Assets.xcassets */,
-				059C719E24ED7EF10005E470 /* LaunchScreen.storyboard */,
-				059C71A124ED7EF10005E470 /* Info.plist */,
-				059C71A224ED7EF10005E470 /* main.m */,
 			);
 			path = 01_Metal_Hello;
 			sourceTree = "<group>";
@@ -89,14 +91,48 @@
 		059C71AC24ED802D0005E470 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				71E9314A26E4CF9A00EDF6B5 /* Generators */,
+				7139807A26E05EAE003ECFB2 /* PMEffectAlgorithmGenerator.h */,
+				7139807926E05DF7003ECFB2 /* PMEffectAlgorithmGenerator.metal */,
 				059C71A924ED80270005E470 /* CJLRenderer.h */,
 				059C71AA24ED80270005E470 /* CJLRenderer.m */,
 				059C71AD24EE3B500005E470 /* CJLShaders.metal */,
 				059C71AF24EE3BA60005E470 /* CJLShaderTypes.h */,
-				71C288DE26D371B70084F1E5 /* test.cpp */,
-				71C288DF26D371B70084F1E5 /* test.hpp */,
+				71E9314126E4965D00EDF6B5 /* PMColorPointModel.h */,
+				71E9314226E4965D00EDF6B5 /* PMColorPointModel.m */,
 			);
 			path = Render;
+			sourceTree = "<group>";
+		};
+		71E9314A26E4CF9A00EDF6B5 /* Generators */ = {
+			isa = PBXGroup;
+			children = (
+				7139807E26E0BC75003ECFB2 /* LPEffectGenerator.h */,
+				7139807D26E0BC75003ECFB2 /* LPEffectGenerator.m */,
+				71E9314426E4C8D200EDF6B5 /* LPFireEffectGenerator.h */,
+				71E9314526E4C8D200EDF6B5 /* LPFireEffectGenerator.m */,
+				71E9314726E4CF7B00EDF6B5 /* LPFlowEffectGenerator.h */,
+				71E9314826E4CF7B00EDF6B5 /* LPFlowEffectGenerator.m */,
+			);
+			path = Generators;
+			sourceTree = "<group>";
+		};
+		71E9314B26E4CFB900EDF6B5 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				059C719C24ED7EF10005E470 /* Assets.xcassets */,
+				059C719E24ED7EF10005E470 /* LaunchScreen.storyboard */,
+				059C71A124ED7EF10005E470 /* Info.plist */,
+				059C71A224ED7EF10005E470 /* main.m */,
+				059C719924ED7EEF0005E470 /* Main.storyboard */,
+				059C719024ED7EEF0005E470 /* AppDelegate.h */,
+				059C719124ED7EEF0005E470 /* AppDelegate.m */,
+				059C719324ED7EEF0005E470 /* SceneDelegate.h */,
+				059C719424ED7EEF0005E470 /* SceneDelegate.m */,
+				059C719624ED7EEF0005E470 /* ViewController.h */,
+				059C719724ED7EEF0005E470 /* ViewController.m */,
+			);
+			path = Application;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,10 +207,14 @@
 			files = (
 				059C71AB24ED80270005E470 /* CJLRenderer.m in Sources */,
 				059C719824ED7EEF0005E470 /* ViewController.m in Sources */,
+				71E9314926E4CF7B00EDF6B5 /* LPFlowEffectGenerator.m in Sources */,
+				7139808026E0D389003ECFB2 /* PMEffectAlgorithmGenerator.metal in Sources */,
 				059C719224ED7EEF0005E470 /* AppDelegate.m in Sources */,
 				059C71A324ED7EF10005E470 /* main.m in Sources */,
+				7139807F26E0BC75003ECFB2 /* LPEffectGenerator.m in Sources */,
 				059C71AE24EE3B510005E470 /* CJLShaders.metal in Sources */,
-				71C288E026D371B80084F1E5 /* test.cpp in Sources */,
+				71E9314326E4965D00EDF6B5 /* PMColorPointModel.m in Sources */,
+				71E9314626E4C8D200EDF6B5 /* LPFireEffectGenerator.m in Sources */,
 				059C719524ED7EEF0005E470 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
