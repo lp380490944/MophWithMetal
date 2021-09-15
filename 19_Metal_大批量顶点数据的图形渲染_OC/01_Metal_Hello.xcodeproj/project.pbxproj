@@ -82,6 +82,7 @@
 		059C718F24ED7EEF0005E470 /* 01_Metal_Hello */ = {
 			isa = PBXGroup;
 			children = (
+				059C71A124ED7EF10005E470 /* Info.plist */,
 				71E9314B26E4CFB900EDF6B5 /* Application */,
 				059C71AC24ED802D0005E470 /* Render */,
 			);
@@ -122,7 +123,6 @@
 			children = (
 				059C719C24ED7EF10005E470 /* Assets.xcassets */,
 				059C719E24ED7EF10005E470 /* LaunchScreen.storyboard */,
-				059C71A124ED7EF10005E470 /* Info.plist */,
 				059C71A224ED7EF10005E470 /* main.m */,
 				059C719924ED7EEF0005E470 /* Main.storyboard */,
 				059C719024ED7EEF0005E470 /* AppDelegate.h */,

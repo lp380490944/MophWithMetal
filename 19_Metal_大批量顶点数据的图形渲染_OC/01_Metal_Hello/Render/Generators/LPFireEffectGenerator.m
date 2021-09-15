@@ -72,12 +72,6 @@
     }
 
 }
-struct  hsvColor cal_color(size_t index, short hue_shift)
-{
-    short pixel_hue = hue_shift + ((index + 1) * 360 / (kNUM_ROWS));
-    struct hsvColor flowColor = hsv(pixel_hue, 1.0, 1.0);
-    return flowColor;
-}
 unsigned short cumulative_distribution(unsigned short color_count, unsigned short mean, unsigned short deviation)
 {
     unsigned short value = 127.0 * (1.0 + erff((color_count - mean) / (deviation * sqrt(2.0))));

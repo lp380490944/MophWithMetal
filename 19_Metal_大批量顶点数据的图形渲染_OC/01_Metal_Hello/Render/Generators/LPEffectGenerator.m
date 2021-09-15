@@ -8,6 +8,7 @@
 
 #import "LPEffectGenerator.h"
 #import "LPFireEffectGenerator.h"
+#import "LPFlowEffectGenerator.h"
 
 @implementation LPEffectGenerator
 struct hsvColor hsv(float h,float s,float v){
@@ -28,6 +29,10 @@ struct hsvColor hsv(float h,float s,float v){
             return [[LPFireEffectGenerator alloc] init];
             break;
         }
+        case PMEffectTypeFlow:{
+            return [[LPFlowEffectGenerator alloc] init];
+            break;
+        }
         default:
             break;
     }
@@ -37,17 +42,20 @@ struct hsvColor hsv(float h,float s,float v){
 -(instancetype)initWithEffectType:(PMEffectType)effecttype{
     if (self = [super init]) {
         _effectType = effecttype;
+        _hue_shift = 0;
     }
     return self;
 }
-
-
-
-CGFLOAT_TYPE _hue_shift = 0;
+-(instancetype)init{
+    if (self = [super init]) {
+        _hue_shift = 0;
+    }
+    return self;
+}
 /*
  
 //morph effect 由于morpheffect 是计算出来的所以就直接放在了.metal里面
-struct hsvColor plasmaMap[3000][3000] = {{0}};
+
 
 
 struct hsvColor getMorphColor(vector_float2 vetor){
@@ -80,10 +88,9 @@ struct hsvColor getMorphColor(vector_float2 vetor){
 
 #pragma mark-- flow effect
 -(struct hsvColor) getEffectColor:(vector_float2)vetor{
-    
     return hsv(0, 0, 0);
 }
--(void)updateShiftStatus;{
+-(void)updateShiftStatus{
     _hue_shift +=1;
 }
 @end

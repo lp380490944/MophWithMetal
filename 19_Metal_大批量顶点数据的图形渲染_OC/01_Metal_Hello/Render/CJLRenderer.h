@@ -21,14 +21,16 @@
  */
 
 #import <Foundation/Foundation.h>
+
 //是iOS 7之后的新特性语法，这种方式叫Modules(模块导入) 或者 "semantic import(语义导入)" ,是一种更好的头部预处理的执行方式
 @import MetalKit;
 #import "CJLShaderTypes.h"
+#import "LPEffectGenerator.h"
+
 typedef NS_ENUM(NSUInteger, PMMTKViewType) {
     PMMTKViewTypeTriangle,
     PMMTKViewTypeRectangle,
 };
-
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CJLRenderer : NSObject<MTKViewDelegate>
 @property(nonatomic,assign)PMMTKViewType mtkviewType;
 @property(nonatomic,assign)PMEffectType effectType;
-- (id)initWithMetalKitView: (MTKView *)mtkView mtkviewType:(PMMTKViewType)mtkviewType effectType:(PMEffectType)effectType;
+@property(nonatomic,assign)PMEffectDirection effectDirection;
+- (id)initWithMetalKitView: (MTKView *)mtkView mtkviewType:(PMMTKViewType)mtkviewType effectType:(PMEffectType)effectType effectDirection:(PMEffectDirection)effectDirection;
 
 @end
 

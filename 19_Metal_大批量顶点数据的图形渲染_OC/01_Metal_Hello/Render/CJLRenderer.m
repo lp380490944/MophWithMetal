@@ -11,20 +11,12 @@
 #import "CJLRenderer.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "LPEffectGenerator.h"
+
 
 
 @import Metal;
 
 //头 在C代码之间共享，这里执行Metal API命令，和.metal文件，这些文件使用这些类型作为着色器的输入。
-
-
-#define kSpaceWidth 2
-#define pointSize 2
-#define blockSize 1
-#define size_get(x) (sizeof(x)/sizeof(x[0]))
-#define kNUM_COLUMNS [UIScreen mainScreen].bounds.size.width
-#define kNUM_ROWS [UIScreen mainScreen].bounds.size.width
 
 @interface CJLRenderer ()
 
@@ -54,10 +46,11 @@
     
     LPEffectGenerator * _generator;
     dispatch_semaphore_t _inFlightSemaphore;
+    UInt8 _counter;
 }
 static float _hue_shift;
 //初始化
-- (id)initWithMetalKitView: (MTKView *)mtkView mtkviewType:(PMMTKViewType)mtkviewType effectType:(PMEffectType)effectType{
+- (id)initWithMetalKitView: (MTKView *)mtkView mtkviewType:(PMMTKViewType)mtkviewType effectType:(PMEffectType)effectType effectDirection:(PMEffectDirection)effectDirection{
     self = [super init];
     if (self) {
         NSLog(@"initWithMetalKitView");
@@ -68,15 +61,15 @@ static float _hue_shift;
         _hue_shift = 0;
         self.mtkviewType = mtkviewType;
         self.effectType = effectType;
+        _generator = [LPEffectGenerator generatorWithEffectType:self.effectType];
+        _generator.effectDirection = self.effectDirection = effectDirection;
         [self loadMetal:mtkView];
         [self reloadVertexData];
+        _counter = 0;
     }
     return self;
 }
-
 - (void)loadMetal: (nonnull MTKView*)mtkView{
-    
-    _generator = [LPEffectGenerator generatorWithEffectType:self.effectType];
 //    1、设置绘制纹理的像素格式
     mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
     
@@ -123,8 +116,6 @@ static float _hue_shift;
     
     _colorBuffer[CJLFragmentInputIndexColorShift] = [_device newBufferWithLength:sizeof(_hue_shift) options:MTLResourceCPUCacheModeDefaultCache];
         _effectTypeBuffer = [_device newBufferWithLength:sizeof(self.effectType) options:MTLResourceCPUCacheModeDefaultCache];
-    
-        
     //    6、通过device创建commandQueue，即命令队列
         _commandQueue = [_device newCommandQueue];
 }
@@ -247,10 +238,13 @@ static bool isLock = false;
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     commandBuffer.label = @"MyCommand";
     [_generator updateShiftStatus];
-    //如果是fireeffectModel 需要更新新的颜色
-    if (self.effectType == PMEffectTypeFire) {
-//        [self updateFireEffectBufferData];
-        [self reloadVertexData];
+    //如果是fireeffectModel 或者flow 需要更新新的颜色
+    if (self.effectType != PMEffectTypeMorph && _counter < 120) {
+        [self updateFireEffectBufferData];
+        _counter ++;
+//        [self reloadVertexData];
+    }else{
+        return;
     }
     
     
@@ -326,10 +320,14 @@ static bool isLock = false;
         float y = vertex.position.x/pointSize  + (float)kNUM_ROWS/2;
         simd_float2 pos =  simd_make_float2(x,y);
         struct hsvColor fireColor = [_generator getEffectColor:pos];
-        NSLog(@"x:%f,y:%f color = %f、%f、%f",vertex.position.x,vertex.position.y,fireColor.h,fireColor.s,fireColor.v);
-        vector_float4 color = {255,255,255.0f,1.0};
-        vertex.color =  color;
+        NSLog(@"x:%f,y:%f color = %f、%f、%f",x,y,fireColor.h,fireColor.s,fireColor.v);
+//        vector_float4 color = {255,255,255.0f,1.0};
+        vertex.color =  simd_make_float4(fireColor.h,fireColor.s,fireColor.v,1.0f);
     }
+    memcpy(_vertexBuffer.contents, &vertexs, sizeof(vertexs));
 }
+#pragma mark-- lazy load
+
+
 
 @end

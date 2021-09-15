@@ -76,12 +76,12 @@ vertexShader(uint vertexID [[vertex_id]],
 //    out.color = vertices[vertexID].color;
     //完成! 将结构体传递到管道中下一个阶段:
     out.effectType = effectType;
-    if(effectType == PMEffectTypeFire){
-        hsvColor fireColor = hsv(currentVertex.color.r, currentVertex.color.g, currentVertex.color.b);
-        out.color = half4(fireColor.h,fireColor.s,fireColor.v,1.0);
-    }else if(effectType == PMEffectTypeMorph){
+    if(effectType == PMEffectTypeMorph){
         hsvColor color = morphColor(vertices[vertexID].position.xy,0);
         out.color =  half4(color.h,color.s,color.v,1.0);
+    }else{
+        hsvColor fireColor = hsv(currentVertex.color.r, currentVertex.color.g, currentVertex.color.b);
+        out.color = half4(fireColor.h,fireColor.s,fireColor.v,1.0);
     }
     
     return out;
@@ -117,7 +117,7 @@ fragment half4 fragmentShader(RasterizerData in [[stage_in]],device float &color
     //返回输入的片元颜色
     
 //    log(in.clipSpacePosition);
-    if(in.effectType == PMEffectTypeFire){
+    if(in.effectType == PMEffectTypeFire||in.effectType == PMEffectTypeFlow){
         colorShit = 0;
     }
     hsvColor hsvColor = hsv((int)(in.color.x+colorShit)%360, in.color.y, in.color.z);

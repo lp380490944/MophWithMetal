@@ -50,6 +50,10 @@ typedef enum PMEffectType
 }PMEffectType;
 
 
+typedef enum PMEffectDirection{
+    PMEffectDirectionUp = 0,
+    PMEffectDirectionLeft = 1,
+}PMEffectDirection;
 
 //顶点数据结构体:顶点/颜色值
 typedef struct
@@ -66,5 +70,12 @@ typedef struct
 typedef struct {
     vector_int2 index[MAX_VALUE_COUNT][MAX_VALUE_COUNT];
 }CJIndexStruct;
+#define kSpaceWidth 2
+#define pointSize 2
+#define blockSize 1
+#define size_get(x) (sizeof(x)/sizeof(x[0]))
+#define kNUM_COLUMNS [UIScreen mainScreen].bounds.size.width/pointSize
+#define kNUM_ROWS [UIScreen mainScreen].bounds.size.width/pointSize
+
 
 #endif /* CJLShaderTypes_h */
