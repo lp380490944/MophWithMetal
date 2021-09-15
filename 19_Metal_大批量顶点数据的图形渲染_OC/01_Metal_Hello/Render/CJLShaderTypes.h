@@ -18,6 +18,7 @@
 #define MAX_VALUE_COUNT 1024
 
 
+
 // 缓存区索引值 共享与 shader 和 C 代码 为了确保Metal Shader缓存区索引能够匹配 Metal API Buffer 设置的集合调用，相当于OpenGL ES中GLSL文件中position参数名称，即入口
 //数据传递时的房间号，metal中表示index，类似于GLSL中的getAttribLocation、getUniformLocation
 typedef enum CJLVertexInputIndex
@@ -65,17 +66,17 @@ typedef struct
     PMEffectType effectType;
 //    RGBA颜色
     vector_float4 color;
+    float fireColorIndex;
+    
 }CJLVertex;
 
 typedef struct {
     vector_int2 index[MAX_VALUE_COUNT][MAX_VALUE_COUNT];
 }CJIndexStruct;
-#define kSpaceWidth 2
-#define pointSize 2
-#define blockSize 1
+//#define kSpaceWidth 2*3
+#define pointSize 10
+#define blockSize pointSize/2
 #define size_get(x) (sizeof(x)/sizeof(x[0]))
-#define kNUM_COLUMNS [UIScreen mainScreen].bounds.size.width/pointSize
-#define kNUM_ROWS [UIScreen mainScreen].bounds.size.width/pointSize
-
-
+#define kNUM_COLUMNS [UIScreen mainScreen].bounds.size.width/pointSize * 3
+#define kNUM_ROWS [UIScreen mainScreen].bounds.size.width/pointSize * 3
 #endif /* CJLShaderTypes_h */

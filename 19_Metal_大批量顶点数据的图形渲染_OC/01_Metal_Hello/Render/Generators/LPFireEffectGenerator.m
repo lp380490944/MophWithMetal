@@ -10,7 +10,7 @@
 
 @interface LPFireEffectGenerator (){
     int _fireGardColorCount;
-    int fireIndexMap[3000][3000];
+    int fireIndexMap[1000][1000];
     struct hsvColor fireGradColors[1000];
 }
 
@@ -19,7 +19,7 @@
 @implementation LPFireEffectGenerator
 -(instancetype)init{
     if (self = [super init]) {
-        _fireGardColorCount = ceil([UIScreen mainScreen].bounds.size.width/6*3/gardCount);
+        _fireGardColorCount = ceil([UIScreen mainScreen].bounds.size.width/6/gardCount);
         [self initFireColor];
     }
     return self;
@@ -37,7 +37,8 @@
 -(struct hsvColor) getFireColor:(vector_float2)vetor{
     struct hsvColor resultColor = hsv(0, 0, 1.0);
     int ind = fireIndexMap[(int)vetor.x][(int)vetor.y];
-    resultColor =  fireGradColors[ind];
+//    resultColor =  fireGradColors[ind];
+    resultColor.h = ind;
     return resultColor;
 }
 

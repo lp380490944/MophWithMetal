@@ -53,7 +53,7 @@ vertexShader(uint vertexID [[vertex_id]],
     RasterizerData out;
     
 //    2、初始化输出剪辑空间位置，将w改为2.0，实际运行结果比1.0小一倍
-    out.clipSpacePosition = vector_float4(0.0, 0.0, 0.0,2/3.0);
+    out.clipSpacePosition = vector_float4(0.0, 0.0, 0.0,1.0);
     
 //    3、获取当前顶点坐标的xy，因为是2D图形
     // 索引到我们的数组位置以获得当前顶点
@@ -79,11 +79,13 @@ vertexShader(uint vertexID [[vertex_id]],
     if(effectType == PMEffectTypeMorph){
         hsvColor color = morphColor(vertices[vertexID].position.xy,0);
         out.color =  half4(color.h,color.s,color.v,1.0);
-    }else{
-        hsvColor fireColor = hsv(currentVertex.color.r, currentVertex.color.g, currentVertex.color.b);
+    }else if(effectType == PMEffectTypeFire){
+        hsvColor fireColor = fireColorWithIndex(currentVertex.fireColorIndex);
         out.color = half4(fireColor.h,fireColor.s,fireColor.v,1.0);
+    }else{
+        hsvColor effectColor = hsv(currentVertex.color.r, currentVertex.color.g, currentVertex.color.b);
+        out.color = half4(effectColor.h,effectColor.s,effectColor.v,1.0);
     }
-    
     return out;
     
 }

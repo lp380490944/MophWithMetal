@@ -30,4 +30,7 @@ hsvColor morphColor(float2 vetor,float hueShift);
 //高斯模糊的算法
 float4 blur9(sampler sampler2D, texture2d<float> texture, float2 uv, float2 resolution, float2 direction);
 
+//根据index获取火焰效果的颜色
+hsvColor fireColorWithIndex(float colorIndex);
+
 #endif /* PMEffectAlgorithmGenerator_h */

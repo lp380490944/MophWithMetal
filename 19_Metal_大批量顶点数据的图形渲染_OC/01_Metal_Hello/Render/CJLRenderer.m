@@ -11,6 +11,7 @@
 #import "CJLRenderer.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "BlockModel.h"
 
 
 
@@ -21,6 +22,8 @@
 @interface CJLRenderer ()
 
 @end
+
+static const NSUInteger MaxFramesInFlight = 3;
 
 @implementation CJLRenderer
 {
@@ -35,7 +38,7 @@
     id<MTLCommandQueue> _commandQueue;
     
 //    ！！！顶点缓存区（大批量顶点数据的图形渲染时使用）
-    id<MTLBuffer> _vertexBuffer;
+    id<MTLBuffer> _vertexBuffer[MaxFramesInFlight];
     
 //    当前视图大小,这样我们才可以在渲染通道使用这个视图
     vector_uint2 _viewportSize;
@@ -46,7 +49,10 @@
     
     LPEffectGenerator * _generator;
     dispatch_semaphore_t _inFlightSemaphore;
+    NSUInteger _currentBuffer;
+    
     UInt8 _counter;
+    NSArray <BlockModel *>* _blockArray;
 }
 static float _hue_shift;
 //初始化
@@ -66,6 +72,7 @@ static float _hue_shift;
         [self loadMetal:mtkView];
         [self reloadVertexData];
         _counter = 0;
+        _inFlightSemaphore = dispatch_semaphore_create(MaxFramesInFlight);
     }
     return self;
 }
@@ -84,7 +91,7 @@ static float _hue_shift;
     pipelineDescriptor.fragmentFunction = fragmentFunction;
     pipelineDescriptor.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat;
     if (@available(iOS 11.0, *)) {
-        pipelineDescriptor.vertexBuffers[CJLVertexInputIndexVertices].mutability = MTLMutabilityMutable;
+        pipelineDescriptor.vertexBuffers[CJLVertexInputIndexVertices].mutability = MTLMutabilityImmutable;
     } else {
         // Fallback on earlier versions
     }
@@ -102,7 +109,13 @@ static float _hue_shift;
     //    5、获取顶点数据
         NSData *vertexData = [self generateVertexData];
     //    创建一个vertex buffer,可以由GPU来读取
-        _vertexBuffer = [_device newBufferWithLength:vertexData.length options:MTLResourceStorageModeShared];
+    for (NSUInteger bufferIndex = 0; bufferIndex < MaxFramesInFlight; bufferIndex++) {
+        _vertexBuffer[bufferIndex] = [_device newBufferWithLength:vertexData.length options:MTLResourceStorageModeShared];
+        _vertexBuffer[bufferIndex].label = [NSString stringWithFormat:@"Vertex Buffer #%lu",(unsigned long)bufferIndex];
+        //此处给三个buffer都赋初始值 这样morph的时候就不会闪屏了。
+        memcpy(_vertexBuffer[bufferIndex].contents, vertexData.bytes, vertexData.length);
+    }
+    
     //    复制vertex data 到vertex buffer 通过缓存区的"content"内容属性访问指针
             /*
              memcpy(void *dst, const void *src, size_t n);
@@ -110,7 +123,6 @@ static float _hue_shift;
              src:源内容 -- 源数据在哪里
              n: 长度 -- 读取长度
              */
-        memcpy(_vertexBuffer.contents, vertexData.bytes, vertexData.length);
     //    计算顶点个数 = 顶点数据长度 / 单个顶点大小
         _numVertices = vertexData.length / sizeof(CJLVertex);
     
@@ -140,7 +152,7 @@ static bool isLock = false;
     {
 //        顶点坐标位于物体坐标系，需要在顶点着色函数中作归一化处理，即物体坐标系 -- NDC
         // Pixel 位置, RGBA 颜色
-        { { -blockSize,   blockSize,1 },pointSize,self.effectType,{1,1,1,1}},
+        { { -blockSize,   blockSize,1 },pointSize,self.effectType,{1,1,1,1},1},
     };
     
     //行/列 数量
@@ -165,36 +177,47 @@ static bool isLock = false;
     }
     
     isLock = true;
+    NSMutableArray * blocks = [NSMutableArray array];
     for (NSUInteger row = 0; row < NUM_ROWS; row++) {
         //计算每一行的列数 如果是三角形的话是从上到下递减，此处需要注意的是当前的坐标系的原点是在左下角(0,0);
         NSInteger perRowColumnNum = [self perRowColumnNum:row];
      
         for (NSUInteger column = 0; column < perRowColumnNum; column++) {
             
+            
+            BlockModel * block = [BlockModel new];
+            block.currentPointSize = pointSize;
+            block.effectType = self.effectType;
             vector_float2 position;
             position.x = row;
             position.y = column;
+            block.rowColumnPosition =  simd_make_int2((int)row,(int)column);
             struct hsvColor fireColor = [_generator getEffectColor:position];
             
             CJLVertex quadVerticesNew[] = {
-                { { -blockSize,   blockSize ,1},pointSize,self.effectType,{fireColor.h,fireColor.s,fireColor.v,1.0}},
+                { { -blockSize,   blockSize ,1},pointSize,self.effectType,{fireColor.h,fireColor.s,fireColor.v,1.0}},1
             };
             //A.左上角的位置
             vector_float3 upperLeftPosition;
             //B.计算X,Y 位置.注意坐标系基于2D笛卡尔坐标系,中心点(0,0),所以会出现负数位置
             upperLeftPosition.x = (column + -((float)NUM_COLUMNS)/2)*pointSize;
             upperLeftPosition.y = row*pointSize + (-(float)NUM_ROWS/2)*pointSize;
+            
             //C.将quadVertices数据复制到currentQuad
             memcpy(currentQuad, &quadVerticesNew, sizeof(quadVerticesNew));
             //D.遍历currentQuad中的数据
             for (NSUInteger vertexInQuad = 0; vertexInQuad < NUM_VERTICES_PER_QUAD; vertexInQuad++) {
                 //修改vertexInQuad中的position
                 currentQuad[vertexInQuad].position += upperLeftPosition;
+                block.position = currentQuad[vertexInQuad].position.xy;
             }
+            
             //E.更新索引
             currentQuad += 1;
+            [blocks addObject:block];
         }
     }
+    _blockArray = blocks;
     //60帧  drawMTView 每秒60次调用；
     isLock = false;
     return vertexData;
@@ -233,18 +256,17 @@ static bool isLock = false;
 
 //每当视图需要渲染时调用
 - (void)drawInMTKView:(MTKView *)view{
+    dispatch_semaphore_wait(_inFlightSemaphore, DISPATCH_TIME_FOREVER);
+    _currentBuffer = (_currentBuffer + 1) % MaxFramesInFlight;
     NSLog(@"drawInMTKView");
 //    1、为当前渲染的每个渲染传递创建一个新的命令缓冲区 & 指定缓存区名称
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     commandBuffer.label = @"MyCommand";
     [_generator updateShiftStatus];
     //如果是fireeffectModel 或者flow 需要更新新的颜色
-    if (self.effectType != PMEffectTypeMorph && _counter < 120) {
+    if (self.effectType != PMEffectTypeMorph) {
         [self updateFireEffectBufferData];
-        _counter ++;
 //        [self reloadVertexData];
-    }else{
-        return;
     }
     
     
@@ -273,7 +295,7 @@ static bool isLock = false;
          */
         
         //将_vertexBuffer 设置到顶点缓存区中，顶点数据很多时，存储到buffer
-        [commandEncoder setVertexBuffer:_vertexBuffer offset:0 atIndex:CJLVertexInputIndexVertices];
+        [commandEncoder setVertexBuffer:_vertexBuffer[_currentBuffer] offset:0 atIndex:CJLVertexInputIndexVertices];
         
         //可以buffer 和 bytes传递混合使用
         //将 _viewportSize 设置到顶点缓存区绑定点设置数据
@@ -308,23 +330,27 @@ static bool isLock = false;
         [commandBuffer presentDrawable:view.currentDrawable];
         
     }
+    __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> _Nonnull buffer) {
+        dispatch_semaphore_signal(block_semaphore);
+    }];
 //    10、最后,在这里完成渲染并将命令缓冲区推送到GPU
     [commandBuffer commit];
     _hue_shift += 1;
 }
 -(void)updateFireEffectBufferData{
-    CJLVertex *vertexs = _vertexBuffer.contents;
-    for (int i  = 0; i < _numVertices; i++) {
-        CJLVertex vertex = vertexs[i];
-        float x = vertex.position.y/pointSize  + (float)kNUM_COLUMNS/2;
-        float y = vertex.position.x/pointSize  + (float)kNUM_ROWS/2;
-        simd_float2 pos =  simd_make_float2(x,y);
-        struct hsvColor fireColor = [_generator getEffectColor:pos];
-        NSLog(@"x:%f,y:%f color = %f、%f、%f",x,y,fireColor.h,fireColor.s,fireColor.v);
-//        vector_float4 color = {255,255,255.0f,1.0};
-        vertex.color =  simd_make_float4(fireColor.h,fireColor.s,fireColor.v,1.0f);
+    CJLVertex *vertexs = _vertexBuffer[_currentBuffer].contents;
+    for (int i  = 0; i < _blockArray.count; i++) {
+        BlockModel * block = _blockArray[i];
+        struct hsvColor fireColor = [_generator getEffectColor:simd_make_float2(block.rowColumnPosition.x,block.rowColumnPosition.y)];
+//        NSLog(@"x:%d,y:%d color = %f、%f、%f",block.rowColumnPosition.x,block.rowColumnPosition.y,fireColor.h,fireColor.s,fireColor.v);
+        vertexs[i].position = simd_make_float3(block.position,1.0);
+        vertexs[i].color =  simd_make_float4(fireColor.h,fireColor.s,fireColor.v,1.0f);
+        vertexs[i].fireColorIndex = fireColor.h;
+        vertexs[i].pointsize = pointSize;
+        vertexs[i].effectType = block.effectType;
     }
-    memcpy(_vertexBuffer.contents, &vertexs, sizeof(vertexs));
+//    memcpy(_vertexBuffer.contents, &vertexs, sizeof(vertexs));
 }
 #pragma mark-- lazy load
 

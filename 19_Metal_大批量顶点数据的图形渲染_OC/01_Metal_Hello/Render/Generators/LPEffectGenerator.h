@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 //#define kNUM_COLUMNS [UIScreen mainScreen].bounds.size.width/2
 //#define kNUM_ROWS [UIScreen mainScreen].bounds.size.width/2
 #define gardCount 1
-#define FIRE_GRAD_COLORS_COUNT [UIScreen mainScreen].bounds.size.width/6*3/gardCount
+#define FIRE_GRAD_COLORS_COUNT [UIScreen mainScreen].bounds.size.width/6/gardCount
 
 struct hsvColor {
 float h;

@@ -98,6 +98,7 @@ rgb hsv2rgb(hsvColor input)
 }
 
 
+
 float4 blur9(metal::sampler sampler2D, metal::texture2d<float> texture, float2 uv, float2 resolution, float2 direction) {
   float4 color = float4(0.0);
   float2 off1 = float2(1.3846153846) * direction;
@@ -133,9 +134,15 @@ float erf(float x)
     return sign*y;
 }
 
+
 unsigned short cumulative_distribution(unsigned short color_count, unsigned short mean, unsigned short deviation)
 {
     unsigned short value = 127.0 * (1.0 + erf((color_count - mean) / (deviation * sqrt(2.0))));
     return value;
 }
+hsvColor fireColorWithIndex(float colorIndex){
+    unsigned short value =  cumulative_distribution(colorIndex, 10, 2);
+    return  hsv(0,100/100.0, value/255.0);
+}
+
 

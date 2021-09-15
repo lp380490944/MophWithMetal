@@ -39,7 +39,7 @@
     //4. 创建CJLRenderer
     _view.preferredFramesPerSecond = 30;
 //    _view.transform3D = CATransform3DMakeRotation(M_PI, 1, 0, 0);
-    _render = [[CJLRenderer alloc] initWithMetalKitView:_view mtkviewType:PMMTKViewTypeTriangle effectType:PMEffectTypeFire effectDirection:PMEffectDirectionLeft];
+    _render = [[CJLRenderer alloc] initWithMetalKitView:_view mtkviewType:PMMTKViewTypeTriangle effectType:PMEffectTypeFlow effectDirection:PMEffectDirectionLeft];
     //5.判断_render 是否创建成功
     if (!_render) {
         NSLog(@"Renderer failed initialization");
